@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace LR2
 {
-    [Serializable]
-    internal class WarShip : Ship, ICrewChanger
+    [Serializable] // сериализуемый
+    internal class WarShip : Ship, ICrewChanger // наследник класса Ship
     {
         private int guns;
         private int gunCaliber;
         private readonly bool torpedoes;
 
-        public WarShip()
+        public WarShip() // конструктор без параметров
         {
             Type = ShipType.Военный;
             guns = 2;
@@ -22,17 +22,37 @@ namespace LR2
         }
 
         public WarShip(string name, ShipType type, int crew, double maxSpeed, int year, int guns, int gunCaliber, bool torpedoes) : base(name, type, crew, maxSpeed, year)
-        {
+        { // конструктор с параметрами
             Guns = guns;
             GunCaliber = gunCaliber;
             this.torpedoes = torpedoes;
         }
 
-        public int Guns { get => guns; set => guns = value; }
-        public int GunCaliber { get => gunCaliber; set => gunCaliber = value; }
-        public bool Torpedoes => torpedoes;
+        public int Guns // свойство поля guns
+        { 
+            get => guns; 
+            set
+            {
+                if (value > 0)
+                    guns = value;
+                else
+                    throw new ArgumentOutOfRangeException("Количество орудий должно быть положительным!");
+            } 
+        }
+        public int GunCaliber // свойство поля gunCaliber
+        { 
+            get => gunCaliber; 
+            set
+            {
+                if (value > 0)
+                    gunCaliber = value;
+                else
+                    throw new ArgumentOutOfRangeException("Калибр орудий должен быть положительным!");
+            } 
+        }
+        public bool Torpedoes => torpedoes; // свойство readonly поля torpedoes
 
-        public void ChangeCrew(int increment) // Метод класса, изменяющий численность экипажа
+        public void ChangeCrew(int increment) // Метод наследуемый от интерфейса, изменяющий численность экипажа
         {
             Crew += increment;
             if (Crew < 0)
@@ -41,7 +61,7 @@ namespace LR2
             }
         }
 
-        public override void EditData()
+        public override void EditData() // Переопределенный метод изменения данных класса Ship
         {
             Console.WriteLine("Параметры для редактирования:");
             Console.WriteLine("[1] Изменить название корабля");
@@ -53,11 +73,28 @@ namespace LR2
             Console.WriteLine("[7] Изменить калибр орудий");
 
             Console.Write("Введите пункт меню: ");
-            int editChoice = int.Parse(Console.ReadLine());
+            int editChoice;
+            try
+            {
+                editChoice = int.Parse(Console.ReadLine());
+            }
+            catch (FormatException ex)
+            {
+                Console.WriteLine(ex.Message + " Введите цифру!");
+                editChoice = 0;
+            }
             while (editChoice < 1 || editChoice > 7)
             {
-                Console.WriteLine("Неверный выбор! Попробуйте еще раз: ");
-                editChoice = int.Parse(Console.ReadLine());
+                Console.Write("Неверный выбор! Попробуйте еще раз: ");
+                try
+                {
+                    editChoice = int.Parse(Console.ReadLine());
+                }
+                catch (FormatException ex)
+                {
+                    Console.WriteLine(ex.Message + " Введите цифру!");
+                    editChoice = 0;
+                }
             }
             switch (editChoice)
             {
@@ -68,13 +105,45 @@ namespace LR2
                     break;
                 case 2:
                     Console.Write("На сколько изменить количество членов экипажа([+] число увеличивает экипаж, [-] уменьшает: ): ");
-                    int crewInc = int.Parse(Console.ReadLine());
-                    this.ChangeCrew(crewInc);
+                    int crewInc;
+                    try
+                    {
+                        crewInc = int.Parse(Console.ReadLine());
+                    }
+                    catch (FormatException ex)
+                    {
+                        Console.WriteLine(ex.Message + " Переменной присвоится значение 0!");
+                        crewInc = 0;
+                    }
+                    try
+                    {
+                        this.ChangeCrew(crewInc);
+                    }
+                    catch (ArgumentOutOfRangeException ex)
+                    {
+                        Console.WriteLine(ex.Message + " Значение не будет изменено!");
+                    }
                     break;
                 case 3:
                     Console.Write("На сколько изменить рекомендуемую скорость([+] число увеличивает экипаж, [-] уменьшает: ): ");
-                    int speedInc = int.Parse(Console.ReadLine());
-                    this.ChangeRecommendedSpeed(speedInc);
+                    int speedInc;
+                    try
+                    {
+                        speedInc = int.Parse(Console.ReadLine());
+                    }
+                    catch (FormatException ex)
+                    {
+                        Console.WriteLine(ex.Message + " Переменной присвоится значение 0!");
+                        speedInc = 0;
+                    }
+                    try
+                    {
+                        this.ChangeRecommendedSpeed(speedInc);
+                    }
+                    catch (ArgumentOutOfRangeException ex)
+                    {
+                        Console.WriteLine(ex.Message + " Значение не будет изменено!");
+                    }                    
                     break;
                 case 4:
                     Console.Write("Введите дату ремонта в формате дд.мм.гггг: ");
@@ -86,26 +155,81 @@ namespace LR2
                         Console.Write("Дата введена неверно! Попробуйте еще раз: ");
                         inputStr = Console.ReadLine();
                     }
-                    this[this.NumberRepair] = date;
+                    try
+                    {
+                        this[this.NumberRepair] = date;
+                    }
+                    catch (IndexOutOfRangeException ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
                     break;
                 case 5:
                     Console.Write("Введите год выпуска: ");
-                    int changeYear = int.Parse(Console.ReadLine());
-                    this.Year = changeYear;
+                    int changeYear;
+                    try
+                    {
+                        changeYear = int.Parse(Console.ReadLine());
+                    }
+                    catch (FormatException ex)
+                    {
+                        Console.WriteLine(ex.Message + " Переменной присвоится значение 0!");
+                        changeYear = 0;
+                    }
+                    try
+                    {
+                        this.Year = changeYear;
+                    }
+                    catch (ShipException ex)
+                    {
+                        Console.WriteLine(ex.Message + " Значение не будет изменено!");
+                    }                    
                     break;
                 case 6:
                     Console.Write("Введите количество орудий: ");
-                    int changeGuns = int.Parse(Console.ReadLine());
-                    this.Guns = changeGuns;
+                    int changeGuns;
+                    try
+                    {
+                        changeGuns = int.Parse(Console.ReadLine());
+                    }
+                    catch (FormatException ex)
+                    {
+                        Console.WriteLine(ex.Message + " Переменной присвоится значение 0!");
+                        changeGuns = 0;
+                    }
+                    try
+                    {
+                        this.Guns = changeGuns;
+                    }
+                    catch (ArgumentOutOfRangeException ex)
+                    {
+                        Console.WriteLine(ex.Message + " Значение не будет изменено!");
+                    }
                     break;
                 case 7:
                     Console.Write("Введите калибр орудий: ");
-                    int changeGunCaliber = int.Parse(Console.ReadLine());
-                    this.GunCaliber = changeGunCaliber;
+                    int changeGunCaliber;
+                    try
+                    {
+                        changeGunCaliber = int.Parse(Console.ReadLine());
+                    }
+                    catch (FormatException ex)
+                    {
+                        Console.WriteLine(ex.Message + " Переменной присвоится значение 0!");
+                        changeGunCaliber = 0;
+                    }
+                    try
+                    {
+                        this.GunCaliber = changeGunCaliber;
+                    }
+                    catch (ArgumentOutOfRangeException ex)
+                    {
+                        Console.WriteLine(ex.Message + " Значение не будет изменено!");
+                    }                    
                     break;
             }
         }
-        public override string ToString()
+        public override string ToString() // Переопределенный метод класса Ship для вывода объекта класса через консоль
         {
             return base.ToString() + $"\nКоличество орудий: {guns}\nКалибр орудий: {GunCaliber}\nНаличие торпед: {torpedoes}";
         }

@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace LR2
-{
+{    
     internal class Program
     {
         static void Main(string[] args)
@@ -16,7 +16,16 @@ namespace LR2
             Console.Write("Введите название порта: ");
             Ship.Port = Console.ReadLine();
             Console.Write("Введите максимально возможное число ремонтов корабля: ");
-            Ship.MaxRepair = int.Parse(Console.ReadLine());
+            try
+            {
+                Ship.MaxRepair = int.Parse(Console.ReadLine());
+            }
+            catch (FormatException ex)
+            {
+                Console.WriteLine(ex.Message + " Максимальное число ремонтов будет равно 3");
+                Ship.MaxRepair = 3;
+                Console.ReadKey();
+            }
             List<Ship> ships = new List<Ship>(); // Создание пустого массива объектов класса Ship
 
             bool isRunning = true; // Переменная, отвечающая за работу цикла
@@ -24,7 +33,17 @@ namespace LR2
             {
                 Console.Clear(); // Очистка экрана
                 PrintMenu(); // Вывод меню на экран
-                int choice = int.Parse(Console.ReadLine()); // Выбор пункта меню
+                int choice;               
+                try
+                {
+                    choice = int.Parse(Console.ReadLine()); // Выбор пункта меню                   
+                }
+                catch (FormatException ex)
+                {
+                    Console.WriteLine(ex.Message + " Необходимо ввести цифру!");
+                    choice = -1; // для перезапуска цикла через метку default switch                    
+                }
+                
                 switch (choice)
                 {
                     case 1: // Добавление в БД
@@ -36,11 +55,29 @@ namespace LR2
                         else
                         {   // Вводится номер удаляемого корабля
                             Console.Write("Введите номер корабля для удаления 1 - {0}: ", ships.Count);
-                            int removeId = int.Parse(Console.ReadLine());
+                            int removeId;
+                            try
+                            {
+                                removeId = int.Parse(Console.ReadLine());
+                            }
+                            catch (FormatException ex)
+                            {
+                                Console.WriteLine(ex.Message + " Введите цифру!");
+                                removeId = 0;
+                            }
                             while (removeId < 1 || removeId > ships.Count)
                             {
                                 Console.Write("Неверный номер! Повторите ввод: ");
-                                removeId = int.Parse(Console.ReadLine());
+                                try
+                                {
+                                    removeId = int.Parse(Console.ReadLine());
+                                }
+                                catch (FormatException ex)
+                                {
+                                    Console.WriteLine(ex.Message + " Введите цифру!");
+                                    removeId = 0;
+                                }
+                                
                             }
                             ships.RemoveAt(removeId - 1); // Удаление объекта из массива по номеру
                             Console.WriteLine("Корабль #{0} успешно удален из БД", removeId);
@@ -53,11 +90,28 @@ namespace LR2
                         else
                         {   // Вводится номер изменяемого корабля
                             Console.Write("Введите номер корабля для изменения данных 1 - {0}: ", ships.Count);
-                            int changeId = int.Parse(Console.ReadLine());
+                            int changeId;
+                            try
+                            {
+                                changeId = int.Parse(Console.ReadLine());
+                            }
+                            catch (FormatException ex)
+                            {
+                                Console.WriteLine(ex.Message + " Введите цифру!");
+                                changeId = 0;
+                            }
                             while (changeId < 1 || changeId > ships.Count)
                             {
                                 Console.Write("Неверный номер! Повторите ввод: ");
-                                changeId = int.Parse(Console.ReadLine());
+                                try
+                                {
+                                    changeId = int.Parse(Console.ReadLine());
+                                }
+                                catch (FormatException ex)
+                                {
+                                    Console.WriteLine(ex.Message + " Введите цифру!");
+                                    changeId = 0;
+                                }
                             }
                             Console.WriteLine();
                             Console.WriteLine("***Корабль до изменения данных***");
@@ -86,22 +140,39 @@ namespace LR2
                         else
                         {   // Вводится номер выводимого на экран корабля
                             Console.Write("Введите номер корабля для отображения 1 - {0}: ", ships.Count);
-                            int id = int.Parse(Console.ReadLine());
+                            int id;
+                            try
+                            {
+                                id = int.Parse(Console.ReadLine());
+                            }
+                            catch (FormatException ex)
+                            {
+                                Console.WriteLine(ex.Message + " Введите цифру!");
+                                id = 0;
+                            }
                             while (id < 1 || id > ships.Count)
                             {
                                 Console.Write("Неверный номер! Повторите ввод: ");
-                                id = int.Parse(Console.ReadLine());
+                                try
+                                {
+                                    id = int.Parse(Console.ReadLine());
+                                }
+                                catch (FormatException ex)
+                                {
+                                    Console.WriteLine(ex.Message + " Введите цифру!");
+                                    id = 0;
+                                }
                             }
                             Console.WriteLine();
                             PrintOneShip(ships, id - 1); // Вывод на экран выбранного корабля
                         }                        
                         Console.ReadKey();
                         break;
-                    case 7:
+                    case 7: // Сериализация данных
                         SerializeData(ships);
                         Console.ReadKey();
                         break;
-                    case 8:
+                    case 8: // Десериализация данных
                         DeserializeData(ref ships); 
                         Console.ReadKey();
                         break;
@@ -193,65 +264,7 @@ namespace LR2
                         Console.WriteLine("Совпадения не найдены!");
                     break;
             }
-        }
-
-        //private static void EditShipData(List<Ship> ships, int changeId) // Метод для изменения данных выбранного корабля
-        //{
-        //    Console.WriteLine("Параметры для редактирования:");
-        //    Console.WriteLine("[1] Изменить название корабля");
-        //    Console.WriteLine("[2] Изменить тип корабля");
-        //    Console.WriteLine("[3] Изменить количество членов экипажа");
-        //    Console.WriteLine("[4] Изменить рекомендуемую скорость");
-        //    Console.WriteLine("[5] Добавить дату ремонта");
-        //    Console.WriteLine("[6] Изменить год выпуска(для созданных по умолчанию)");
-        //    Console.Write("Введите пункт меню: ");
-        //    int editChoice = int.Parse(Console.ReadLine());
-        //    while (editChoice < 1 || editChoice > 6)
-        //    {
-        //        Console.WriteLine("Неверный выбор! Попробуйте еще раз: ");
-        //        editChoice = int.Parse(Console.ReadLine());
-        //    }
-        //    switch (editChoice)
-        //    {
-        //        case 1:
-        //            Console.Write("Введите новое название: ");
-        //            string changeName = Console.ReadLine();
-        //            ships[changeId - 1].Name = changeName;
-        //            break;
-        //        case 2:
-        //            Console.Write("Введите новый тип корабля: ");
-        //            string changeType = Console.ReadLine();
-        //            ships[changeId - 1].Type = changeType;
-        //            break;
-        //        case 3:
-        //            Console.Write("На сколько изменить количество членов экипажа([+] число увеличивает экипаж, [-] уменьшает: ): ");
-        //            int crewInc = int.Parse(Console.ReadLine());
-        //            ships[changeId - 1].ChangeCrew(crewInc);
-        //            break;
-        //        case 4:
-        //            Console.Write("На сколько изменить рекомендуемую скорость([+] число увеличивает экипаж, [-] уменьшает: ): ");
-        //            int speedInc = int.Parse(Console.ReadLine());
-        //            ships[changeId - 1].ChangeRecommendedSpeed(speedInc);
-        //            break;
-        //        case 5:
-        //            Console.Write("Введите дату ремонта в формате дд.мм.гггг: ");
-        //            string inputStr = Console.ReadLine();
-        //            string mask = "dd.MM.yyyy";
-        //            DateTime date;
-        //            while (!DateTime.TryParseExact(inputStr, mask, null, System.Globalization.DateTimeStyles.None, out date))
-        //            {
-        //                Console.Write("Дата введена неверно! Попробуйте еще раз: ");
-        //                inputStr = Console.ReadLine();
-        //            }
-        //            ships[changeId - 1][ships[changeId - 1].NumberRepair] = date;
-        //            break;
-        //        case 6:
-        //            Console.Write("Введите год выпуска: ");
-        //            int changeYear = int.Parse(Console.ReadLine());
-        //            ships[changeId - 1].Year = changeYear;
-        //            break;
-        //    }
-        //}
+        }        
 
         private static void PrintAllShips(List<Ship> ships) // Выводит на экран все корабли в БД
         {
@@ -277,22 +290,58 @@ namespace LR2
 
         private static void AddShip(List<Ship> ships) // Добавляет корабль в БД
         {
-            Console.WriteLine("Введите тип корабля (1 - пассажирский, 2 - военный): ");
-            int enteredType = int.Parse(Console.ReadLine());
+            Console.Write("Введите тип корабля (1 - пассажирский, 2 - военный): ");
+            int enteredType;
+            try
+            {
+                enteredType = int.Parse(Console.ReadLine());
+            }
+            catch (FormatException ex)
+            {
+                Console.WriteLine(ex.Message + " Введите цифру!");
+                enteredType = 0;
+            }
+            
             while (enteredType < 1 || enteredType > 2)
             {
                 Console.Write("Неверный выбор! Повторите ввод: ");
-                enteredType = int.Parse(Console.ReadLine());
+                try
+                {
+                    enteredType = int.Parse(Console.ReadLine());
+                }
+                catch (FormatException ex)
+                {
+                    Console.WriteLine(ex.Message + " Введите цифру!");
+                    enteredType = 0;
+                }
             }
             Console.WriteLine("Вы хотите создать:");
             Console.WriteLine("[1] Корабль с параметрами по умолчанию");
             Console.WriteLine("[2] Корабль с параметрами, введенными с клавиатуры");
             Console.Write("Ваш выбор: ");
-            int choiceCase1 = int.Parse(Console.ReadLine());
+            int choiceCase1;
+            try
+            {
+                choiceCase1 = int.Parse(Console.ReadLine());
+            }
+            catch (FormatException ex)
+            {
+                Console.WriteLine(ex.Message + " Введите цифру!");
+                choiceCase1 = 0;
+            }
+            
             while (choiceCase1 < 1 || choiceCase1 > 2)
             {
                 Console.Write("Неверный выбор! Повторите ввод: ");
-                choiceCase1 = int.Parse(Console.ReadLine());
+                try
+                {
+                    choiceCase1 = int.Parse(Console.ReadLine());
+                }
+                catch (FormatException ex)
+                {
+                    Console.WriteLine(ex.Message + " Введите цифру!");
+                    choiceCase1 = 0;
+                }
             }
             switch (choiceCase1)
             {
@@ -313,47 +362,156 @@ namespace LR2
                     break;
                 case 2:
                     Console.Write("Введите название корабля: ");
-                    string newName = Console.ReadLine();
-                    //Console.Write("Введите тип корабля: ");
-                    //string newType = Console.ReadLine();
+                    string newName = Console.ReadLine();                    
                     Console.Write("Введите число членов экипажа: ");
-                    int newCrew = int.Parse(Console.ReadLine());
+                    int newCrew;
+                    try
+                    {
+                        newCrew = int.Parse(Console.ReadLine());
+                    }
+                    catch (FormatException ex)
+                    {
+                        Console.WriteLine(ex.Message + " Значение будет установлено в 1!");
+                        newCrew = 1;
+                    }
+                    
                     Console.Write("Введите рекомендуемую скорость: ");
-                    double newMaxSpeed = double.Parse(Console.ReadLine());
+                    double newMaxSpeed; 
+                    try
+                    {
+                        newMaxSpeed = double.Parse(Console.ReadLine());
+                    }
+                    catch (FormatException ex)
+                    {
+                        Console.WriteLine(ex.Message + " Значение будет установлено в 1!");
+                        newMaxSpeed = 1;
+                    }
                     Console.Write("Введите год выпуска: ");
                     int newYear = int.Parse(Console.ReadLine());
                     if (enteredType == 1)
                     {
                         Console.Write("Введите число пассажиров: ");
-                        int newPassangers = int.Parse(Console.ReadLine());
+                        int newPassangers; 
+                        try
+                        {
+                            newPassangers = int.Parse(Console.ReadLine());
+                        }
+                        catch (FormatException ex)
+                        {
+                            Console.WriteLine(ex.Message + " Значение будет установлено в 1!");
+                            newPassangers = 1;
+                        }
                         Console.Write("Наличие ресторана (true - есть, false - нет): ");
-                        bool newRestaraunt = bool.Parse(Console.ReadLine());
+                        bool newRestaraunt; 
+                        try
+                        {
+                            newRestaraunt = bool.Parse(Console.ReadLine()); ;
+                        }
+                        catch (FormatException ex)
+                        {
+                            Console.WriteLine(ex.Message + " Значение будет установлено в true!");
+                            newRestaraunt = true;
+                        }
                         Console.Write("Введите площадь пассажирской каюты (м2): ");
-                        double newSquare = double.Parse(Console.ReadLine());
-                        PassengerShip newPassengerShip2 = new PassengerShip(newName, (ShipType)enteredType, newCrew, newMaxSpeed, newYear, newPassangers, newRestaraunt, newSquare);
-                        CreateRepairDates(newPassengerShip2);
-                        ships.Add(newPassengerShip2);
-                        Console.WriteLine("Пассажирский корабль с заданными параметрами успешно внесен в БД");
+                        double newSquare;
+                        try
+                        {
+                            newSquare = double.Parse(Console.ReadLine());
+                        }
+                        catch (FormatException ex)
+                        {
+                            Console.WriteLine(ex.Message + " Значение будет установлено в 10!");
+                            newSquare = 10;
+                        }
+                        try
+                        {
+                            PassengerShip newPassengerShip2 = new PassengerShip(newName, (ShipType)enteredType, newCrew, newMaxSpeed, newYear, newPassangers, newRestaraunt, newSquare);
+                            CreateRepairDates(newPassengerShip2);
+                            ships.Add(newPassengerShip2);
+                            Console.WriteLine("Пассажирский корабль с заданными параметрами успешно внесен в БД");
+                        }
+                        catch (ShipException ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                            Console.WriteLine("Объект не будет создан!!!");
+                        }
+                        catch (ArgumentOutOfRangeException ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                            Console.WriteLine("Объект не будет создан!!!");
+                        }
+                        catch (IndexOutOfRangeException ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                            Console.WriteLine("Объект не будет создан!!!");
+                        }
+                        
                     }
                     else
                     {
                         Console.Write("Введите количество орудий: ");
-                        int newGuns = int.Parse(Console.ReadLine());
+                        int newGuns; 
+                        try
+                        {
+                            newGuns = int.Parse(Console.ReadLine());
+                        }
+                        catch (FormatException ex)
+                        {
+                            Console.WriteLine(ex.Message + " Значение будет установлено в 1!");
+                            newGuns = 1;
+                        }
                         Console.Write("Введите калибр орудий: ");
-                        int newCaliber = int.Parse(Console.ReadLine());
+                        int newCaliber; 
+                        try
+                        {
+                            newCaliber = int.Parse(Console.ReadLine());
+                        }
+                        catch (FormatException ex)
+                        {
+                            Console.WriteLine(ex.Message + " Значение будет установлено в 76!");
+                            newCaliber = 76;
+                        }
                         Console.Write("Наличие торпед (true - есть, false - нет): ");
-                        bool newTorpedoes = bool.Parse(Console.ReadLine());
-                        WarShip newWarShip2 = new WarShip(newName, (ShipType)enteredType, newCrew, newMaxSpeed, newYear, newGuns, newCaliber, newTorpedoes);
-                        CreateRepairDates(newWarShip2);
-                        ships.Add(newWarShip2);
-                        Console.WriteLine("Военнный корабль с заданными параметрами успешно внесен в БД");
+                        bool newTorpedoes;
+                        try
+                        {
+                            newTorpedoes = bool.Parse(Console.ReadLine());
+                        }
+                        catch (FormatException ex)
+                        {
+                            Console.WriteLine(ex.Message + " Значение будет установлено в true!");
+                            newTorpedoes = true;
+                        }
+                        try
+                        {
+                            WarShip newWarShip2 = new WarShip(newName, (ShipType)enteredType, newCrew, newMaxSpeed, newYear, newGuns, newCaliber, newTorpedoes);
+                            CreateRepairDates(newWarShip2);
+                            ships.Add(newWarShip2);
+                            Console.WriteLine("Военнный корабль с заданными параметрами успешно внесен в БД");
+                        }
+                        catch (ShipException ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                            Console.WriteLine("Объект не будет создан!!!");
+                        }
+                        catch (ArgumentOutOfRangeException ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                            Console.WriteLine("Объект не будет создан!!!");
+                        }
+                        catch (IndexOutOfRangeException ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                            Console.WriteLine("Объект не будет создан!!!");
+                        }
+
                     }                                                       
                     Console.ReadKey();
                     break;
             }
         }
 
-        private static void CreateRepairDates(Ship newShip)
+        private static void CreateRepairDates(Ship newShip) // Метод добавления дат при создании объекта
         {
             Console.Write("Хотите внести даты ремонта?(Y/N): ");
             char ch = Console.ReadLine()[0];
@@ -385,7 +543,7 @@ namespace LR2
                 Console.WriteLine("Данные о датах ремонта не были внесены");
         }
 
-        public static void SerializeData(List<Ship> ships)
+        public static void SerializeData(List<Ship> ships) // Метод сериализации данных
         {
             BinaryFormatter bf = new BinaryFormatter();
             using (FileStream fs = new FileStream("ShipsDB.bin", FileMode.Create, FileAccess.Write))
@@ -396,7 +554,7 @@ namespace LR2
             }
         }
 
-        public static void DeserializeData(ref List<Ship> ships)
+        public static void DeserializeData(ref List<Ship> ships) // Метод десериализации данных
         {
             BinaryFormatter bf = new BinaryFormatter();
             using (FileStream fs = new FileStream("ShipsDB.bin", FileMode.Open, FileAccess.Read))

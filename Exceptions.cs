@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LR2
 {
-    internal class ShipException : ApplicationException
+    internal class ShipException : ApplicationException // Пользовательский класс исключений 
     {
         public ShipException(string message) : base(message) { }        
     }

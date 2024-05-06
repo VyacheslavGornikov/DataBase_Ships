@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace LR2
 {
-    enum ShipType
+    enum ShipType // перечисление с типами корабля
     {
         Неизвестный,
         Пассажирский,
         Военный
     }
-    [Serializable]
+    [Serializable] // сериализуемый
     internal abstract class Ship
     {
         // Поля класса Ship
@@ -133,7 +133,7 @@ namespace LR2
             return finStr.ToString();
         }
 
-        public abstract void EditData();
+        public abstract void EditData(); // абстрактный метод класса
 
         //public abstract void ShowTypeShip();        
     }
