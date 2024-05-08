@@ -133,8 +133,6 @@ namespace LR2
             return finStr.ToString();
         }
 
-        public abstract void EditData(); // абстрактный метод класса
-
-        //public abstract void ShowTypeShip();        
+        public abstract void EditData(); // абстрактный метод класса             
     }
 }

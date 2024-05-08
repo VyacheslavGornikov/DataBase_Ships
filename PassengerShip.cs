@@ -167,7 +167,7 @@ namespace LR2
                     break;
                 case 5:
                     Console.Write("Введите год выпуска: ");
-                    int changeYear = int.Parse(Console.ReadLine());
+                    int changeYear;
                     try
                     {
                         changeYear = int.Parse(Console.ReadLine());
